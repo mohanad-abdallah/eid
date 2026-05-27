@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>عيد أضحى مبارك</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:'Cairo',sans-serif;
+    }
+
+    body{
+      height:100vh;
+      overflow:hidden;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background:linear-gradient(135deg,#0ea5e9,#22d3ee,#67e8f9);
+      position:relative;
+    }
+
+    video{
+      position:absolute;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      z-index:-3;
+    }
+
+    .overlay-bg{
+      position:absolute;
+      inset:0;
+      background:rgba(0,40,60,0.35);
+      z-index:-2;
+    }
+
+    /* FIREWORKS CANVAS */
+    canvas{
+      position:fixed;
+      inset:0;
+      z-index:-1;
+    }
+
+    .card{
+      width:90%;
+      max-width:850px;
+      background:rgba(255,255,255,0.15);
+      border:1px solid rgba(255,255,255,0.25);
+      backdrop-filter:blur(10px);
+      border-radius:30px;
+      padding:60px 30px;
+      text-align:center;
+      color:#fff;
+      box-shadow:0 0 40px rgba(34,211,238,0.4);
+      animation:show 1s ease;
+    }
+
+    @keyframes show{
+      from{transform:scale(.7);opacity:0;}
+      to{transform:scale(1);opacity:1;}
+    }
+
+    .moon{
+      font-size:80px;
+      animation:float 3s infinite ease-in-out;
+    }
+
+    @keyframes float{
+      50%{transform:translateY(-10px);}
+    }
+
+    h1{
+      font-size:65px;
+      margin-top:10px;
+      color:#22d3ee;
+      text-shadow:0 0 20px #22d3ee;
+    }
+
+    .name{
+      font-size:50px;
+      margin-top:25px;
+      font-weight:900;
+      color:#fff;
+      text-shadow:0 0 10px #fff, 0 0 20px #22d3ee;
+    }
+
+    .msg{
+      margin-top:20px;
+      font-size:24px;
+      color:#eee;
+    }
+
+    .popup{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.7);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:999;
+    }
+
+    .popup-box{
+      width:90%;
+      max-width:400px;
+      background:#0f172a;
+      padding:30px;
+      border-radius:25px;
+      text-align:center;
+      color:white;
+      box-shadow:0 0 30px rgba(34,211,238,0.4);
+    }
+
+    .popup-box h2{
+      margin-bottom:20px;
+      color:#22d3ee;
+    }
+
+    input{
+      width:100%;
+      padding:15px;
+      border:none;
+      outline:none;
+      border-radius:15px;
+      font-size:18px;
+      margin-bottom:20px;
+    }
+
+    button{
+      width:100%;
+      padding:15px;
+      border:none;
+      border-radius:15px;
+      background:#22d3ee;
+      color:black;
+      font-size:20px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:.3s;
+    }
+
+    button:hover{
+      transform:scale(1.05);
+    }
+
+    @media(max-width:600px){
+      h1{font-size:38px;}
+      .name{font-size:30px;}
+      .msg{font-size:18px;}
+      .moon{font-size:55px;}
+    }
+
+  </style>
+</head>
+
+<body>
+
+<canvas id="fireworks"></canvas>
+
+<video autoplay muted loop>
+  <source src="https://cdn.coverr.co/videos/coverr-night-sky-1560087997211?download=1080p" type="video/mp4">
+</video>
+
+<div class="overlay-bg"></div>
+
+<div class="popup" id="popup">
+  <div class="popup-box">
+    <h2>اكتب اسمك ✨</h2>
+    <input type="text" id="inputName" placeholder="اسمك هنا">
+    <button onclick="saveName()">عرض التهنئة</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="moon">🐑</div>
+
+  <h1>عيد أضحى مبارك</h1>
+
+  <div class="name" id="name"></div>
+
+  <div class="msg">
+    كل عام وأنت بخير ❤️
+    <br><br>
+    <span style="font: size 25px;;color:#090a0ad0;">
+      From Eng Mohanad Abdallah
+    </span>
+  </div>
+</div>
+
+<script>
+  const popup = document.getElementById("popup");
+  const nameDiv = document.getElementById("name");
+
+  function saveName(){
+    let name = document.getElementById("inputName").value;
+
+    if(name.trim() == ""){
+      alert("اكتب اسمك الأول");
+      return;
+    }
+
+    nameDiv.innerText = name;
+    popup.style.display = "none";
+  }
+
+  /* FIREWORKS */
+  const canvas = document.getElementById("fireworks");
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  let particles = [];
+
+  function random(min, max){
+    return Math.random() * (max - min) + min;
+  }
+
+  function createFirework(){
+    const x = random(0, canvas.width);
+    const y = random(0, canvas.height / 2);
+
+    for(let i=0;i<40;i++){
+      particles.push({
+        x,
+        y,
+        angle: Math.random() * 2 * Math.PI,
+        speed: random(1,5),
+        radius: 2,
+        alpha: 1
+      });
+    }
+  }
+
+  function update(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    particles.forEach((p,i)=>{
+      p.x += Math.cos(p.angle) * p.speed;
+      p.y += Math.sin(p.angle) * p.speed;
+      p.alpha -= 0.01;
+
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
+      ctx.fillStyle = `rgba(34,211,238,${p.alpha})`;
+      ctx.fill();
+
+      if(p.alpha <= 0){
+        particles.splice(i,1);
+      }
+    });
+  }
+
+  setInterval(createFirework, 1200);
+  function animate(){
+    update();
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+</script>
+
+</body>
+</html>
